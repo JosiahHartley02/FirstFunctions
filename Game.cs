@@ -4,12 +4,6 @@ using System.Text;
 
 namespace HelloWorld
 {
-    struct Player
-    {
-        public int health;
-        public int damage;
-    }
-
     struct Item
     {
         public int statBoost;
@@ -17,11 +11,11 @@ namespace HelloWorld
 
     class Game
     {
-        bool _gameOver = false;
-        Player _player1;
-        Player _player2;
-        Item longSword;
-        Item dagger;
+        private bool _gameOver = false;
+        private Player _player1;
+        private Player _player2;
+        private Item longSword;
+        private Item dagger;
         //Run the game
         public void Run()
         {
@@ -31,15 +25,7 @@ namespace HelloWorld
                 Update();
             }
             End();
-        }
-        public void InitializePlayers()
-        {
-            _player1.health = 100;
-            _player1.damage = 5;
-
-            _player2.health = 100;
-            _player2.damage = 5;
-        }
+        }        
 
         public void InitializeItems()
         {
@@ -61,68 +47,74 @@ namespace HelloWorld
 
             }
         }
-        public void EquipItems()
+        public void SelectItems(Player player)
         {
             char input;
-            GetInput(out input, "LongSword", "Dagger", "Welcome! Player one please choose a weapon.");
+            GetInput(out input, "LongSword", "Dagger", "Welcome! please choose a weapon.");
 
             if (input == '1')
             {
-                _player1.damage += longSword.statBoost;
+                _player1.EquipItem(longSword);
             }
             else if (input == '2')
             {
-                _player1.damage += dagger.statBoost;
+                _player1.EquipItem(dagger);
             }
             Console.WriteLine("Player one");
-            PrintStats(_player1);
+            _player1.PrintStats();
 
-            GetInput(out input, "LongSword", "Dagger", "Welcome! Player two please choose a weapon.");
+            GetInput(out input, "LongSword", "Dagger", "Welcome! please choose a weapon.");
 
             if (input == '1')
             {
-                _player2.damage += longSword.statBoost;
+                player.EquipItem(longSword);
             }
             else if (input == '2')
             {
-                _player2.damage += dagger.statBoost;
+                player.EquipItem(dagger);
             }
             Console.WriteLine("Player two");
-            PrintStats(_player2);
+            _player2.PrintStats();
             Console.WriteLine("Press enter to continue");
             Console.ReadKey();
             Console.Clear();
         }
+        public Player CreateCharacter()
+        {
+            Console.WriteLine("wuts ur name????");
+            string name = Console.ReadLine();
+            Player player = new Player(name, 100, 10);
+            SelectItems(player);
+            return player;
+        }
         public void StartBattle()
         {
             Console.WriteLine("Fight!");
-            while (_player1.health > 0 && _player2.health > 0)
+            while (_player1.GetIsAlive() && _player2.GetIsAlive())
             {
                 Console.WriteLine("Player one info");
-                PrintStats(_player1);
+                _player1.PrintStats();
                 Console.WriteLine("Player two info");
-                PrintStats(_player2);
+                _player2.PrintStats();
                 char input;
-                if (_player1.health > 0)
+                if (_player1.GetIsAlive())
                 {
                     GetInput(out input, "Attack", "Stare Menacingly", "Player one, what is your move?");
                     if (input == '1')
-                    {
-                        Console.WriteLine("Player one hit Player two for " + _player1.damage + "!");
-                        _player2.health -= _player1.damage;
+                    {                       
+                        _player1.Attack(_player2);
                     }
                     if (input == '2')
                     {
                         Console.WriteLine("Player one stares hard, nothing seems to happen.");
                     }
                 }
-                if (_player2.health > 0)
+                if (_player2.GetIsAlive())
                 {
                     GetInput(out input, "Attack", "Stare Menacingly", "Player two, how do you counter?");
                     if (input == '1')
                     {
-                        Console.WriteLine("Player one hit Player two for " + _player1.damage + "!");
-                        _player1.health -= _player2.damage;
+                        _player2.Attack(_player1);
                     }
                     if (input == '2')
                     {
@@ -132,11 +124,11 @@ namespace HelloWorld
                 Console.Clear();
             }
             Console.WriteLine("There has been a winner!");
-            if (_player1.health > 0)
+            if (_player1.GetIsAlive())
             {
                 Console.WriteLine("Player One Has Proven Themself to be Better!");
             }
-            if (_player2.health > 0)
+            if (_player2.GetIsAlive())
             {
                 Console.WriteLine("Player Two Has Proven Themself to be Better!");
             }
@@ -150,24 +142,20 @@ namespace HelloWorld
             {
                 _gameOver = true;
             }
-        }
-        public void PrintStats(Player player)
-        {
-            Console.WriteLine("Health: " + player.health + "\n Damage: " + player.damage);
-        }
+        }        
+        
 
         //Performed once when the game begins
         public void Start()
         {
-            InitializePlayers();
             InitializeItems();
         }
 
         //Repeated until the game ends
         public void Update()
-        {
-            InitializePlayers();
-            EquipItems();
+        {            
+            _player1 = CreateCharacter();
+            _player2 = CreateCharacter();
             StartBattle();
         }
 
