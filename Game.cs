@@ -54,36 +54,19 @@ namespace HelloWorld
 
             if (input == '1')
             {
-                _player1.EquipItem(longSword);
+                player.AddItemToInventory(longSword, 0);
             }
             else if (input == '2')
             {
-                _player1.EquipItem(dagger);
-            }
-            Console.WriteLine("Player one");
-            _player1.PrintStats();
-
-            GetInput(out input, "LongSword", "Dagger", "Welcome! please choose a weapon.");
-
-            if (input == '1')
-            {
-                player.EquipItem(longSword);
-            }
-            else if (input == '2')
-            {
-                player.EquipItem(dagger);
-            }
-            Console.WriteLine("Player two");
-            _player2.PrintStats();
-            Console.WriteLine("Press enter to continue");
-            Console.ReadKey();
-            Console.Clear();
+                player.AddItemToInventory(dagger,0);
+            }            
+            player.PrintStats();
         }
         public Player CreateCharacter()
         {
             Console.WriteLine("wuts ur name????");
             string name = Console.ReadLine();
-            Player player = new Player(name, 100, 10);
+            Player player = new Player(name, 100, 10, 5);
             SelectItems(player);
             return player;
         }
