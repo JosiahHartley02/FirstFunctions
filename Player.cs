@@ -8,29 +8,54 @@ namespace HelloWorld
     {
         private string _name;
         private int _health;
-        private int _damage;
+        private int _basedamage;
         private Item[] _inventory;
+        private Item _currentWeapon;
+        private Item _hands;
         public Player()
         {
             _inventory = new Item[3];
             _health = 100;
-            _damage = 10;
+            _basedamage = 10;
+            _hands.name = "These Hands";
+            _hands.statBoost = 0;
             _name = "Hero";
         }
         public Player(string nameVal, int healthVal, int damageVal, int inventorySize)
         {
             _health = healthVal;
-            _damage = damageVal;
+            _basedamage = damageVal;
             _name = nameVal;
             _inventory = new Item[inventorySize];
+            _hands.name = "These Hands";
+            _hands.statBoost = 0;
         }
         public void AddItemToInventory(Item item, int index)
         {
             _inventory[index] = item;
         }
+        public bool Contains(int itemIndex)
+        {
+            if(itemIndex > 0 && itemIndex < _inventory.Length)
+            {
+                return true;
+            }
+            return false;
+        }
+
+        public void UnequipItem()
+        {
+            _currentWeapon = _hands;
+        }
+
         public void EquipItem(int itemIndex)
         {
-            _damage = _inventory[itemIndex].statBoost;
+            if (Contains(itemIndex))
+            {
+                _currentWeapon = _inventory[itemIndex];
+            }
+            
+            
         }
         public string GetName()
         {
@@ -38,11 +63,12 @@ namespace HelloWorld
         }
         public void Attack(Player enemy)
         {
-            enemy.TakeDamage(_damage);
+            int totalDamage = _basedamage + _currentWeapon.statBoost;
+            enemy.TakeDamage(totalDamage);
         }
         public void PrintStats()
         {
-            Console.WriteLine("Name: " + _name + "\nHealth: " + _health + "\n Damage: " + _damage);
+            Console.WriteLine("Name: " + _name + "\nHealth: " + _health + "\n Damage: " + _basedamage + "\nCurrent Weapon");
         }
         public void TakeDamage(int damageVal)
         {
@@ -56,6 +82,9 @@ namespace HelloWorld
         {
             return _health > 0;
         }
-
+        public Item[] GetInventory()
+        {
+            return _inventory;
+        }
     }
 }
